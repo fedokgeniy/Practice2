@@ -10,6 +10,8 @@ namespace SeleniumTests
     [CollectionDefinition("UI Tests", DisableParallelization = false)]
     [assembly: CollectionBehavior(MaxParallelThreads = 4)]
     public class UITestCollection : ICollectionFixture<EHUSiteTests> { }
+
+    [Collection("UI Tests")]
     public class EHUSiteTests : IDisposable
     {
         private IWebDriver driver;
