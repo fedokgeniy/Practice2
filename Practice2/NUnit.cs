@@ -5,9 +5,12 @@ using OpenQA.Selenium.Interactions;
 using System;
 using static System.Net.Mime.MediaTypeNames;
 
+[assembly: Parallelizable(ParallelScope.Fixtures)]
+
 namespace SeleniumTests
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Self)]
     public class EHUSiteTests
     {
         private IWebDriver driver;
@@ -25,6 +28,7 @@ namespace SeleniumTests
         }
 
         [Test]
+        [Category("Navigation")]
         public void VerifyNavigationToAboutEHU()
         {
             // Step 1
@@ -44,6 +48,7 @@ namespace SeleniumTests
         }
 
         [Test]
+        [Category("Search")]
         public void VerifySearchFunctionality()
         {
             driver.Navigate().GoToUrl(baseUrl);
@@ -67,8 +72,9 @@ namespace SeleniumTests
 
             Assert.That(unexpectedText, Is.Not.EqualTo(actualText), $"Expected: '{unexpectedText}', but was: '{actualText}'.");
         }
-
+        
         [Test]
+        [Category("Localisation")]
         public void VerifyLanguageChangeFunctionality()
         {
             driver.Navigate().GoToUrl(baseUrl);
@@ -89,6 +95,7 @@ namespace SeleniumTests
         }
 
         [Test]
+        [Category("Contacts")]
         public void VerifyContactFormSubmission()
         {
             driver.Navigate().GoToUrl("https://en.ehu.lt/contact/");

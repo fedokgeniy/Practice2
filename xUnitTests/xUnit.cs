@@ -2,14 +2,24 @@
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Interactions;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace SeleniumTests
 {
+    [CollectionDefinition("UI Tests", DisableParallelization = false)]
+    public class UITestCollection : ICollectionFixture<EHUSiteTests> { }
     public class EHUSiteTests : IDisposable
     {
         private IWebDriver driver;
         private string baseUrl = "https://en.ehu.lt/";
+
+        public static IEnumerable<object[]> SearchQueries =>
+            new List<object[]>
+            {
+                new object[] { "study programs" },
+                new object[] { "admission" }
+            };
 
         public EHUSiteTests()
         {
@@ -22,6 +32,7 @@ namespace SeleniumTests
         }
 
         [Fact]
+        [Trait("Category", "Navigation")]
         public void VerifyNavigationToAboutEHU()
         {
             driver.Navigate().GoToUrl(baseUrl);
@@ -36,22 +47,23 @@ namespace SeleniumTests
             Assert.Equal("About", heading.Text);
         }
 
-        [Fact]
-        public void VerifySearchFunctionality()
+        [Theory]
+        [MemberData(nameof(SearchQueries))]
+        [Trait("Category", "Search")]
+        public void VerifySearchFunctionality(string query)
         {
             driver.Navigate().GoToUrl(baseUrl);
 
             IWebElement searchIcon = driver.FindElement(By.ClassName("header-search"));
-
             Actions actions = new Actions(driver);
             actions.MoveToElement(searchIcon).Perform();
             System.Threading.Thread.Sleep(1000);
 
             IWebElement searchBox = driver.FindElement(By.Name("s"));
-            searchBox.SendKeys("study programs");
+            searchBox.SendKeys(query);
             searchBox.SendKeys(Keys.Enter);
 
-            Assert.Contains("/?s=study+programs", driver.Url);
+            Assert.Contains($"/?s={query.Replace(" ", "+")}", driver.Url);
 
             IWebElement searchResults = driver.FindElement(By.ClassName("search-filter__result-count"));
             string unexpectedText = "0 results found.";
@@ -61,6 +73,7 @@ namespace SeleniumTests
         }
 
         [Fact]
+        [Trait("Category", "Localization")]
         public void VerifyLanguageChangeFunctionality()
         {
             driver.Navigate().GoToUrl(baseUrl);
@@ -81,6 +94,7 @@ namespace SeleniumTests
         }
 
         [Fact]
+        [Trait("Category", "Contact")]
         public void VerifyContactFormSubmission()
         {
             driver.Navigate().GoToUrl("https://en.ehu.lt/contact/");
