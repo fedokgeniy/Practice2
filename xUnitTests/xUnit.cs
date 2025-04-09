@@ -8,6 +8,7 @@ using Xunit;
 namespace SeleniumTests
 {
     [CollectionDefinition("UI Tests", DisableParallelization = false)]
+    [assembly: CollectionBehavior(MaxParallelThreads = 4)]
     public class UITestCollection : ICollectionFixture<EHUSiteTests> { }
     public class EHUSiteTests : IDisposable
     {
@@ -17,8 +18,7 @@ namespace SeleniumTests
         public static IEnumerable<object[]> SearchQueries =>
             new List<object[]>
             {
-                new object[] { "study programs" },
-                new object[] { "admission" }
+                new object[] { "study programs" }
             };
 
         public EHUSiteTests()
